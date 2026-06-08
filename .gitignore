@@ -1,0 +1,54 @@
+# Go build/test outputs
+/attest
+bin/
+dist/
+*.test
+*.out
+*.prof
+*.pprof
+coverage.out
+cover.out
+*.coverprofile
+
+# Local Go workspace files
+go.work
+go.work.sum
+
+# Editor, IDE, and OS metadata
+.idea/
+.vscode/
+.fleet/
+.zed/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# AI agent state, instructions, and scratch files
+.codex/
+.claude/
+.cursor/
+.continue/
+.windsurf/
+.gemini/
+.aider*
+AGENTS.md
+AGENT.md
+CLAUDE.md
+CLAUDE.local.md
+CODEX.md
+GEMINI.md
+GEMINI.local.md
+QWEN.md
+.cursorrules
+.windsurfrules
+.clinerules
+.github/copilot-instructions.md
+
+# Local environment overrides
+.env
+.env.*
+!.env.example
+
+# Root placeholder from local scaffolding
+/.gitkeep
