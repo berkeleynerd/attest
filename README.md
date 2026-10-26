@@ -119,6 +119,17 @@ The trailer body is standard Base64-encoded JSON wrapped at 76 characters per li
 
 The trailer is not part of the signed payload. The tool does not parse HTML, canonicalize HTML, normalize line endings, trim whitespace, or rewrite signed payload bytes.
 
+Signing explicitly requests a binary-document OpenPGP signature, even if the
+local GPG configuration enables text mode. Verification accepts only binary
+signatures: text-mode signatures normalize line endings and cannot establish
+byte-exact authorship. Recomputed diagnostic hashes cannot repair an altered
+payload's signature, and appended bytes after the final trailer are rejected.
+
+`smol` validates XHTML5 and self-contained resources before delegating signing,
+then validates the final document and verifies signatures during publishing.
+The manifest is optional metadata inside the signed page; no manifest is
+required by `attest verify`.
+
 ## Git EOL warning
 
 Git EOL normalization can break signatures because the payload is signed as raw bytes. This repository includes:

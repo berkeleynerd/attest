@@ -52,7 +52,7 @@ func gpgDetachSign(gpgPath, key string, payload []byte) (string, error) {
 	if err := os.WriteFile(payloadPath, payload, 0600); err != nil {
 		return "", err
 	}
-	res, err := runGPG(gpgPath, nil, "--batch", "--yes", "--armor", "--detach-sign", "--local-user", key, "--output", sigPath, payloadPath)
+	res, err := runGPG(gpgPath, nil, "--batch", "--yes", "--no-textmode", "--armor", "--detach-sign", "--local-user", key, "--output", sigPath, payloadPath)
 	if err != nil {
 		return "", fmt.Errorf("could not start gpg: %w", err)
 	}
@@ -78,17 +78,18 @@ const (
 )
 
 type SignatureStatus struct {
-	GoodSig       bool
-	ValidSig      bool
-	BadSig        bool
-	ExpSig        bool
-	ExpKeySig     bool
-	RevKeySig     bool
-	ErrSig        bool
-	ErrSigRC      string
-	NoPubKey      bool
-	Fingerprint   string
-	UnknownStatus []string
+	GoodSig        bool
+	ValidSig       bool
+	BadSig         bool
+	ExpSig         bool
+	ExpKeySig      bool
+	RevKeySig      bool
+	ErrSig         bool
+	ErrSigRC       string
+	NoPubKey       bool
+	Fingerprint    string
+	SignatureClass string
+	UnknownStatus  []string
 }
 
 type VerificationClassification struct {
@@ -117,6 +118,9 @@ func parseGPGStatus(output string) SignatureStatus {
 			if len(fields) > 1 {
 				st.Fingerprint = normalizeFingerprint(fields[1])
 			}
+			if len(fields) > 9 {
+				st.SignatureClass = fields[9]
+			}
 		case "BADSIG":
 			st.BadSig = true
 		case "EXPSIG":
@@ -140,6 +144,9 @@ func parseGPGStatus(output string) SignatureStatus {
 }
 
 func classifyGPGStatus(st SignatureStatus, processExit int) VerificationClassification {
+	if st.ValidSig && st.SignatureClass != "00" {
+		return VerificationClassification{Verdict: VerdictInvalid, Message: "only byte-exact binary-document signatures are accepted", Fingerprint: st.Fingerprint}
+	}
 	if st.ValidSig && st.ExpSig {
 		return VerificationClassification{Verdict: VerdictExpired, Message: "signature or signing key is expired", Fingerprint: st.Fingerprint}
 	}
