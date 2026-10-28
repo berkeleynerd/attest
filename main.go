@@ -222,7 +222,7 @@ func readParsed(path string, stdout, stderr io.Writer) (ParsedAttestation, int) 
 func printNonValidVerdict(stdout io.Writer, cls VerificationClassification) {
 	switch cls.Verdict {
 	case VerdictInvalid:
-		fmt.Fprintln(stdout, "INVALID: OpenPGP signature verification failed")
+		fmt.Fprintf(stdout, "INVALID: %s\n", cls.Message)
 	case VerdictExpired:
 		fmt.Fprintln(stdout, "EXPIRED: signature or signing key is expired")
 	case VerdictRevoked:
